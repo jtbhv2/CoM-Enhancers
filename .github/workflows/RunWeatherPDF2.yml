@@ -27,6 +27,6 @@ jobs:
 
       - name: Run WeatherPDF2 script
         run: |
-          python scripts/WeatherPDF2.py  # Adjust the path if needed
+          python WeatherPDF/WeatherPDF2.py  # Adjust the path if needed
         env:
           googlekey: ${{ secrets.googlekey }}
