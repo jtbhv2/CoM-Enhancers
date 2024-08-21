@@ -12,7 +12,7 @@ import requests
 
 # Gmail configuration
 gmail.username = 'MemphisDailyWeather@gmail.com'
-gmail.password = 'ayjakvdckacymskn'
+gmail.password = os.getenv('googlekey')
 
 # memphis is hardcoded. change the urls to f strinngs to mod them to pull from anywhere
 NWSURL = 'https://forecast.weather.gov/MapClick.php?lat=35.1495&lon=-90.0490&FcstType=json'
