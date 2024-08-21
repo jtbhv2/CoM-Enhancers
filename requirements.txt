@@ -1,4 +1,4 @@
 pdfkit==1.0.0
-PyPDF2==1.26.0
-redmail==1.0.0
-requests==2.28.1
+PyPDF2==3.0.1
+redmail==0.6.0
+requests==2.32.3
