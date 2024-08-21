@@ -1,14 +1,18 @@
-#This original one will do what it needs to do.
-#Sends an email that must then be manually forwarded.
+#This one is upgraded. Sends using SMTP directly into city domain, directly to recipients.
+#No need to manually forward anymore! Yay!
+#WILL FAIL IF RUN WITHIN CITY NETWORK. CITY FIREWALL DOES NOT ALLOW SENDING OF SMTP. MUST RUN OUTSIDE NETWORK.
 
 import pdfkit
 from PyPDF2 import PdfMerger, PdfReader, PdfWriter
 from datetime import datetime
 import os
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail, Attachment
+from redmail import gmail
 import base64
 import requests
+
+# Gmail configuration
+gmail.username = 'MemphisDailyWeather@gmail.com'
+gmail.password = 'ayjakvdckacymskn'
 
 # memphis is hardcoded. change the urls to f strinngs to mod them to pull from anywhere
 NWSURL = 'https://forecast.weather.gov/MapClick.php?lat=35.1495&lon=-90.0490&FcstType=json'
@@ -35,8 +39,8 @@ def forecastFormat(forecastData):
     todayPrecipChance = precipChance[todayIndex]
     todayRainfall = rainfallAmounts[todayIndex] if todayIndex < len(rainfallAmounts) else None
 
-    summary = f"Weather Summary for {datetime.now().strftime('%Y-%m-%d')}:\n"
-    summary += f"Temperature: {todayTemp}°F\n"
+    #summary = f"Weather Summary for {datetime.now().strftime('%Y-%m-%d')}:\n"
+    summary = f"Temperature: {todayTemp}°F\n"
     summary += f"Weather: {todayWeather}\n"
     summary += f"Chance of Precipitation: {todayPrecipChance}%\n"
 
@@ -89,41 +93,21 @@ os.remove(output1)
 os.remove(output2)
 os.remove(output1SinglePage)
 
-# simple enough
-sendgridApiKey = os.environ.get('SENDGRID_API_KEY')
-rrecipientEmail = 'memphisdailyweather@gmail.com'
-senderEmail = 'Brian.StLouis@memphistn.gov'
-
-if not sendgridApiKey: 
-    raise ValueError("No SendGrid API key found")
+# Email configuration
+recipientEmail = 'brian.stlouis@memphistn.gov'
+senderEmail = 'MemphisDailyWeather@gmail.com'
 
 with open(outputPDF, 'rb') as f:
     pdf_data = f.read()
-    encoded_pdf = base64.b64encode(pdf_data).decode()
 
-# ugh
-attachment = Attachment(
-    file_content=encoded_pdf,
-    file_type='application/pdf',
-    file_name=outputPDF,
-    disposition='attachment'
-)
-
-# i hate dealing with email
-message = Mail(
-    from_email=senderEmail,
-    to_emails=rrecipientEmail,
-    subject=f'Weather Report for {currentDate}',
-    html_content=f'<p>Weather Summary for {currentDate}:</p><pre>{weatherSummary}</pre>'
-)
-message.add_attachment(attachment)
-
-# send email
+# send email using gmail
 try:
-    sg = SendGridAPIClient(sendgridApiKey)
-    response = sg.send(message)
-    print(response.status_code)
-    print(response.body)
-    print(response.headers)
-except Exception as e: # its easy to get lost in exceptions isnt it
-    print(e)
+    gmail.send(
+        subject=f'Weather Report for {currentDate}',
+        receivers=[recipientEmail],
+        text=f'Weather Summary for {currentDate}:\n\n{weatherSummary}',
+        attachments={outputPDF: pdf_data}
+    )
+    print("Email sent successfully")
+except Exception as e:
+    print(f"Failed to send email: {e}")
