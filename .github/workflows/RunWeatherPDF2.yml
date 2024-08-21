@@ -30,6 +30,6 @@ jobs:
 
       - name: Run WeatherPDF2 script
         run: |
-          python scripts/WeatherPDF2.py
+          python WeatherPDF/WeatherPDF2.py
         env:
           googlekey: ${{ secrets.googlekey }}
