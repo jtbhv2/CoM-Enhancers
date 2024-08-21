@@ -1,10 +1,11 @@
-name: Run Weather Script
+name: Run Weather PDF Script
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch: # Allows manual triggering from GitHub UI
+  # Schedule to run every day at 7 AM Central Time (1 PM UTC)
+  schedule:
+    - cron: '0 13 * * *' # This is for UTC-6
+  # Allows manual triggering from GitHub UI
+  workflow_dispatch: 
 
 jobs:
   run_script:
@@ -24,8 +25,8 @@ jobs:
           pip install -r requirements.txt
           pip install pdfkit PyPDF2 redmail requests
 
-      - name: Run Python script
+      - name: Run WeatherPDF2 script
         run: |
-          python WeatherPDF2.py
+          python scripts/WeatherPDF2.py  # Adjust the path if needed
         env:
           googlekey: ${{ secrets.googlekey }}
