@@ -1,11 +1,9 @@
 name: Run Weather PDF Script
 
 on:
-  # Schedule to run every day at 7 AM Central Time (1 PM UTC)
   schedule:
-    - cron: '0 13 * * *' # This is for UTC-6
-  # Allows manual triggering from GitHub UI
-  workflow_dispatch: 
+    - cron: '0 13 * * *'  # Schedule to run daily at 7 AM Central Time (1 PM UTC)
+  workflow_dispatch: # Allows manual triggering
 
 jobs:
   run_script:
@@ -20,6 +18,11 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Install wkhtmltopdf
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wkhtmltopdf
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
@@ -27,6 +30,6 @@ jobs:
 
       - name: Run WeatherPDF2 script
         run: |
-          python WeatherPDF/WeatherPDF2.py  # Adjust the path if needed
+          python scripts/WeatherPDF2.py
         env:
           googlekey: ${{ secrets.googlekey }}
