@@ -96,6 +96,8 @@ os.remove(output1SinglePage)
 # Email configuration
 recipientEmail = 'brian.stlouis@memphistn.gov'
 senderEmail = 'MemphisDailyWeather@gmail.com'
+recipientCC = 'emailaddresshere'
+recipientBCC = 'emailaddresshere'
 
 with open(outputPDF, 'rb') as f:
     pdf_data = f.read()
@@ -105,6 +107,8 @@ try:
     gmail.send(
         subject=f'Weather Report for {currentDate}',
         receivers=[recipientEmail],
+        #cc=[recipientCC], #set up for these juuuuuuuust in case
+        #bcc=[recipientBCC],
         text=f'Weather Summary for {currentDate}:\n\n{weatherSummary}',
         attachments={outputPDF: pdf_data}
     )
