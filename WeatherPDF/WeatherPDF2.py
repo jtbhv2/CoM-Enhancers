@@ -96,7 +96,7 @@ os.remove(output1SinglePage)
 # Email configuration
 recipientEmail = 'willie.sandifer@memphistn.gov, jameelah.white@memphistn.gov'
 senderEmail = 'MemphisDailyWeather@gmail.com'
-recipientCC = 'brian.stlouis@memphistn.gov, david.howell@memphistn.gov, corey.lewis@memphistn.gov, jonathan.whitefield@memphistn.gov'
+recipientCC = 'brian.stlouis@memphistn.gov, david.howell@memphistn.gov, corey.lewis@memphistn.gov, jonathan.whitfield@memphistn.gov'
 recipientBCC = 'emailaddresshere'
 
 with open(outputPDF, 'rb') as f:
