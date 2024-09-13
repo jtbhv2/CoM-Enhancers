@@ -2,7 +2,7 @@ name: Run Weather PDF Script
 
 on:
   schedule:
-    - cron: '52 11 * * *'  # Schedule to run daily at 7 AM Central Time (1 PM UTC)
+    - cron: '30 11 * * *'  # Schedule to run daily at 7 AM Central Time (1 PM UTC)
   workflow_dispatch: # Allows manual triggering
 
 jobs:
