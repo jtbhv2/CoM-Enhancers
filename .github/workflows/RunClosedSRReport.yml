@@ -23,8 +23,8 @@ jobs:
           pip install -r requirements.txt
           pip install redmail requests pandas openpyxl
 
-      - name: Run WeatherPDF2 script
+      - name: Run CSR script
         run: |
-          python WeatherPDF/WeatherPDF2.py
+          python ClosedSRReport.py
         env:
           googlekey: ${{ secrets.googlekey }}
