@@ -2,22 +2,14 @@
 #No need to manually forward anymore! Yay!
 #WILL FAIL IF RUN WITHIN CITY NETWORK. CITY FIREWALL DOES NOT ALLOW SENDING OF SMTP. MUST RUN OUTSIDE NETWORK.
 
-import pdfkit
-from PyPDF2 import PdfMerger, PdfReader, PdfWriter
-from datetime import datetime
+
 import os
 from redmail import gmail
 import base64
 import requests
-
-
-import tkinter as tk
 import pandas as pd
-import requests
 import datetime
 from datetime import datetime, timedelta
-import re
-import ctypes
 import os
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Color
@@ -26,8 +18,6 @@ from openpyxl.worksheet.table import Table
 from openpyxl.styles.fills import GradientFill
 from openpyxl.worksheet.page import PageMargins
 import openpyxl.styles
-import win32com.client
-from tkinter import simpledialog
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, Font, PatternFill, GradientFill, Color
 from openpyxl.worksheet.table import Table
