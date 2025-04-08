@@ -1,7 +1,3 @@
-#This one is upgraded. Sends using SMTP directly into city domain, directly to recipients.
-#No need to manually forward anymore! Yay!
-#WILL FAIL IF RUN WITHIN CITY NETWORK. CITY FIREWALL DOES NOT ALLOW SENDING OF SMTP. MUST RUN OUTSIDE NETWORK.
-
 
 import os
 from redmail import gmail
@@ -10,7 +6,7 @@ import requests
 import pandas as pd
 import datetime
 from datetime import datetime, timedelta
-import os
+import re
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Color
 from openpyxl.formatting.rule import ColorScaleRule, FormulaRule
