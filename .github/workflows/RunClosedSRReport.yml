@@ -20,7 +20,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          pip install -r requirementsCSR.txt
           pip install redmail requests pandas openpyxl
 
       - name: Run CSR script
