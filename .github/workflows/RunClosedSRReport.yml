@@ -1,1 +1,30 @@
+name: Run CSR Script
 
+on:
+  schedule:
+    - cron: '15 11 * * *'  # Schedule to run daily at 7 AM Central Time (1 PM UTC)
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  run_script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install redmail requests pandas openpyxl
+
+      - name: Run WeatherPDF2 script
+        run: |
+          python WeatherPDF/WeatherPDF2.py
+        env:
+          googlekey: ${{ secrets.googlekey }}
