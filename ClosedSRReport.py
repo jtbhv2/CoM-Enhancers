@@ -298,20 +298,13 @@ recipientBCC = 'emailaddresshere'
 try:
     with open(outputPath, 'rb') as f:
         file_data = f.read()
-    # Count cases per assignee
-    counts = df["assigned_to"].value_counts()
-    
-    # Create email body
-    body = "Attached is the closed service request report for yesterday.\n\n"
-    body += "Here is the current case distribution:\n\n"
-    for name, count in counts.items():
-        body += f"- {name}: {count} case(s)\n"
+
     gmail.send(
         subject=f'Drain Zone Report for {currentDate.strftime("%B %d, %Y")}',
         receivers=[recipientEmail],
         cc=[recipientCC],  # Leave bcc commented if not used
         # bcc=[recipientBCC],
-        text=body,
+        text='Here is the closed SR report for yesterday',
         attachments={outputPath: file_data}
     )
     print("Email sent successfully")
