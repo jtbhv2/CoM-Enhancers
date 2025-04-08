@@ -1,0 +1,4 @@
+openpyxl==3.1.5
+pandas==2.2.3
+redmail==0.6.0
+requests==2.32.3
