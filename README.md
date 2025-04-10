@@ -1,1 +1,1 @@
-Smallish things I plan to do/ am doing/ have done with python.
+Things for making my work life easier and better.
