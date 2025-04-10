@@ -1,1 +1,0 @@
-I do not know much about machine learning, but this is a small introductory thing that I found online. Using datasaet to predict diseases.
