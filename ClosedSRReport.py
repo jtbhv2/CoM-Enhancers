@@ -289,7 +289,7 @@ else:
     showErrorMessage()
 
 # Email configuration
-recipientEmail = 'corey.lewis@memphistn.gov'
+recipientEmail = 'corey.lewis@memphistn.gov, jameelah.white@memphistn.gov'
 senderEmail = 'MemphisDailyWeather@gmail.com'
 recipientCC = 'brian.stlouis@memphistn.gov'
 recipientBCC = 'emailaddresshere'
