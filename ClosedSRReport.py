@@ -279,10 +279,10 @@ def countTheClosed(outputPath):
 
     # Create table 
     lines = ['Closed SRs by Person:\n']
-    lines.append(f"{'Closed By':<25}{'Count':>5}")
-    lines.append('-'*32)
+    lines.append(f"{'Closed By':<20}{'Count':>10}")
+    lines.append('-'*30)
     for _, row in valueCounts.iterrows():
-        lines.append(f"{row['Closed By']:<25} {row['Count']:>5}")
+        lines.append(f"{row['Closed By']:<20} {row['Count']:>10}")
     return "\n".join(lines)
 
 
