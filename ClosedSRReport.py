@@ -312,7 +312,7 @@ try:
         #receivers=[recipientEmail],
         cc=[recipientCC],  # Leave bcc commented if not used
         # bcc=[recipientBCC],
-        text=f'Here is the closed SR report for yesterday.\n\n{summary}',
+        html=f'<pre style="font-family: Courier New, monospace;">Here is the closed SR report for yesterday.\n\n{summary}</pre>',
         attachments={outputPath: file_data}
     )
     print("Email sent successfully")
