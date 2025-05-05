@@ -1,7 +1,6 @@
 
 import os
 from redmail import gmail
-import base64
 import requests
 import pandas as pd
 import datetime
@@ -14,19 +13,12 @@ from openpyxl.worksheet.table import Table
 from openpyxl.styles.fills import GradientFill
 from openpyxl.worksheet.page import PageMargins
 import openpyxl.styles
-from openpyxl import load_workbook
 from openpyxl.styles import Alignment, Font, PatternFill, GradientFill, Color
 from openpyxl.worksheet.table import Table
 
 # Gmail configuration
 gmail.username = 'MemphisDailyWeather@gmail.com'
 gmail.password = os.getenv('googlekey')
-
-def showErrorMessage():
-    ctypes.windll.user32.MessageBoxW(0,
-    "Error: Unable to retrieve data. Either GIS is down, you are not connected to the internet, or something else broke. Please contact Brian.",
-    "Error",
-    0x10)
 
 def applyFormatting(df, ws, wb, outputPath):
     ws.title = 'All Drain Zones'
@@ -230,7 +222,7 @@ def fetchData(filter_condition):
                 #Convert some dates
                 df['Reported Date'] = pd.to_datetime(df['Reported Date'], unit='ms', origin='unix')
                 #Sort by map page
-                df.sort_values(by='Map Page', ascending=True, inplace=True)
+                df.sort_values(by='Drain Zone', ascending=True, inplace=True)
 
                 #Delete the nonsense
                 incinerate(df)
@@ -241,15 +233,13 @@ def fetchData(filter_condition):
         except requests.exceptions.RequestException as e:
             print(f"Request failed: {e}")
             return pd.DataFrame()
-    else:
-        showErrorMessage()
 
 def exportData(df):
     if df.empty:
         print("No data to export.")
         return
 
-    yesDate = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
+    yesDate = (datetime.now() - timedelta(days=3)).strftime('%Y-%m-%d') #days shold equal 1
     outputPath = f'ClosedSRReport{yesDate}.xlsx'
 
     # Create a workbook and sheet
@@ -274,10 +264,27 @@ def exportData(df):
 def queryData():
     global df
     sqlDate = datetime.now().strftime("%Y-%m-%d")
-    sqlDateYes = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+    sqlDateYes = (datetime.now() - timedelta(days=3)).strftime("%Y-%m-%d") #yesterday should equal 1
 
     df = fetchData(f"CLOSE_DATE >= timestamp '{sqlDateYes} 00:00:00' And CLOSE_DATE < timestamp '{sqlDate} 00:00:00' And REQUEST_STATUS = 'Closed'")
     return exportData(df) 
+
+def countTheClosed(outputPath):
+    # Load the specified sheet from the Excel file
+    df = pd.read_excel(outputPath, sheet_name=0, engine='openpyxl')
+
+    # Count occurrences in column I
+    valueCounts = df.iloc[:, 8].value_counts().reset_index()
+    valueCounts.columns = ['Closed By', 'Count']
+
+    # Create table 
+    lines = ['Closed SRs by Person:\n']
+    lines.append(f"{'Closed By':<25}{'Count':>5}")
+    lines.append('-'*32)
+    for _, row in valueCounts.iterrows():
+        lines.append(f"{row['Closed By']:<25} {row['Count']:>5}")
+    return "\n".join(lines)
+
 
 currentDate = datetime.now()
 checkDate = datetime(2026, 6, 1)
@@ -285,26 +292,27 @@ checkDate = datetime(2026, 6, 1)
 
 if __name__ == "__main__" and checkDate > currentDate:
     outputPath = queryData()
-else:
-    showErrorMessage()
+    countTheClosed(outputPath)
 
 # Email configuration
-recipientEmail = 'corey.lewis@memphistn.gov'
+recipientEmail = 'corey.lewis@memphistn.gov, jameelah.white@memphistn.gov'
 senderEmail = 'MemphisDailyWeather@gmail.com'
 recipientCC = 'brian.stlouis@memphistn.gov'
 recipientBCC = 'emailaddresshere'
 
-# Attach the Excel report
+#Attach the Excel report
 try:
     with open(outputPath, 'rb') as f:
         file_data = f.read()
 
+        summary = countTheClosed(outputPath)
+
     gmail.send(
         subject=f'Drain Zone Report for {currentDate.strftime("%B %d, %Y")}',
-        receivers=[recipientEmail],
+        #receivers=[recipientEmail],
         cc=[recipientCC],  # Leave bcc commented if not used
         # bcc=[recipientBCC],
-        text='Here is the closed SR report for yesterday',
+        text=f'Here is the closed SR report for yesterday.\n\n{summary}',
         attachments={outputPath: file_data}
     )
     print("Email sent successfully")
