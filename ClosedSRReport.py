@@ -239,7 +239,7 @@ def exportData(df):
         print("No data to export.")
         return
 
-    yesDate = (datetime.now() - timedelta(days=3)).strftime('%Y-%m-%d') #days shold equal 1
+    yesDate = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d') #days shold equal 1
     outputPath = f'ClosedSRReport{yesDate}.xlsx'
 
     # Create a workbook and sheet
@@ -264,7 +264,7 @@ def exportData(df):
 def queryData():
     global df
     sqlDate = datetime.now().strftime("%Y-%m-%d")
-    sqlDateYes = (datetime.now() - timedelta(days=3)).strftime("%Y-%m-%d") #yesterday should equal 1
+    sqlDateYes = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d") #yesterday should equal 1
 
     df = fetchData(f"CLOSE_DATE >= timestamp '{sqlDateYes} 00:00:00' And CLOSE_DATE < timestamp '{sqlDate} 00:00:00' And REQUEST_STATUS = 'Closed'")
     return exportData(df) 
@@ -309,7 +309,7 @@ try:
 
     gmail.send(
         subject=f'Drain Zone Report for {currentDate.strftime("%B %d, %Y")}',
-        #receivers=[recipientEmail],
+        receivers=[recipientEmail],
         cc=[recipientCC],  # Leave bcc commented if not used
         # bcc=[recipientBCC],
         html=f'<p>Here is the closed SR report for yesterday.</p><pre style="font-family: Courier New, monospace;">{summary}</pre>',
