@@ -78,6 +78,9 @@ def applyFormatting(df, ws, wb, outputPath):
     for cell in ws['E']:
         cell.alignment = Alignment(horizontal='center', vertical='center',wrap_text=True)
 
+    for cell in ws['I']: #They literally started assigning tickets wrong and messed this up. So this fixes their errors.
+        cell.alignment = Alignment(horizontal='center', vertical='center',shrink_to_fit=True)
+
     for row in range(2, ws.max_row + 1): #Format col a based on j
         if ws[f'J{row}'].value:
             cell = ws[f'A{row}']
@@ -153,12 +156,13 @@ def applyFormatting(df, ws, wb, outputPath):
 
 
     #Let's get this stupid thing ready to print
+    currentDateTime = datetime.now().strftime(" %H:%M:%S")
     for sheet in wb.sheetnames:
         ws = wb[sheet]
         ws.page_setup.orientation = ws.ORIENTATION_LANDSCAPE  # Landscape orientation
         ws.page_setup.paperSize = ws.PAPERSIZE_LEGAL  # Legal paper size
         ws.page_margins = PageMargins(left=0.25, right=0.25, top=0.25, bottom=0.25, header=0.3, footer=0.3)
-        ws.oddFooter.right.text = "&\"-,Bold\"&14&KFF0000&D"  # Date in red
+        ws.oddFooter.right.text = f"&\"-,Bold\"&14&KFF0000&D{currentDateTime}"  # Date in red
         ws.oddFooter.left.text = "&\"-,Bold\"&14&KFF0000&P"  # Page number in the left footer in red
 
 
@@ -418,7 +422,7 @@ def main():
     exportButton = tk.Button(root, text="Export Outstanding Flooding Tickets to Excel", command=lambda: exportFloodData(df3))
     exportButton.pack_forget()
 
-    versionLabel = tk.Label(root, text="Version 4.7.25")
+    versionLabel = tk.Label(root, text="Version 5.6.25")
     versionLabel.place(x=10, y=275)
 
     root.mainloop()
