@@ -197,7 +197,7 @@ def fetchData(filter_condition):
 ###
     url = "https://maps.memphistn.gov/mapping/rest/services/PublicWorks/Drain_Services_PROD/FeatureServer/1/query"
     params = {
-        "where": "1=1",
+        "where": filter_condition,
         "outFields": "*",
         "f": "json",
         "token": portal_token
