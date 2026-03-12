@@ -1,4 +1,4 @@
-(
+((
     Barricade_Date IS NOT NULL
   AND Barricade_PickUpDate IS NULL
 )
@@ -8,4 +8,5 @@ OR (
 OR (
   INCIDENT_TYPE_ID IN (29747, 29748)
   AND Barricade_PickUpDate IS NULL
-)
+))
+AND Reported_Date >= timestamp '2025-4-1'

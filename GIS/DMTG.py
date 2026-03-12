@@ -189,14 +189,28 @@ def incinerate(df):
     return df
 
 def runGISGrabber():
-    # Define the URL and parameters
+    # Define the URL and params
+    ## Generate Token
+    portal_url = "https://maps.memphistn.gov/portal/sharing/rest/generateToken"
+    payload = {
+        'username': 'titus.frazier@memphistn.gov',
+        'password': 'Memphis2026!',
+        'client': 'referer',
+        'referer': 'https://maps.memphistn.gov',
+        'f': 'json'
+    }
+ 
+    response = requests.post(portal_url, data=payload)
+    portal_token = response.json()['token']
+ 
+###
     url = "https://maps.memphistn.gov/mapping/rest/services/PublicWorks/Drain_Services_PROD/FeatureServer/1/query"
     params = {
         "where": "1=1",
         "outFields": "*",
-        "f": "json"
+        "f": "json",
+        "token": portal_token
     }
-
     # Fetch data from the GIS server
     response = requests.get(url, params=params)
 
@@ -254,12 +268,13 @@ def runGISGrabber():
                 copies = simpledialog.askinteger('Print Copies','Enter the number of copies you want to print (max of 10), or enter 0 to cancel.', minvalue=0, maxvalue=10)
                 return copies
 
+
             def printSheets(outputPath):
                 response = showPrintMessage('Do you want to print the zone sheets?', 'Confirm Print', 0x4)
                 #response = 6
                 if response == 6:
                     copies = getPrintCopies()
-                    if copies == 0 or None:
+                    if copies == 0 or copies is None:
                         showPrintMessage('Printing Canceled','Info',0x40)
                     
                     excel = win32com.client.Dispatch('Excel.Application')
@@ -285,11 +300,27 @@ def runGISGrabber():
         showErrorMessage()
 
 def fetchFloodData(filter_condition):
-    url = "https://maps.memphistn.gov/mapping/rest/services/PublicWorks/Drain_Services_PROD/FeatureServer/0/query"
+    # Define the URL and params
+    ## Generate Token
+    portal_url = "https://maps.memphistn.gov/portal/sharing/rest/generateToken"
+    payload = {
+        'username': 'titus.frazier@memphistn.gov',
+        'password': 'Memphis2026!',
+        'client': 'referer',
+        'referer': 'https://maps.memphistn.gov',
+        'f': 'json'
+    }
+ 
+    response = requests.post(portal_url, data=payload)
+    portal_token = response.json()['token']
+ 
+###
+    url = "https://maps.memphistn.gov/mapping/rest/services/PublicWorks/Drain_Services_PROD/FeatureServer/1/query"
     params = {
         "where": filter_condition,
         "outFields": "*",
-        "f": "json"
+        "f": "json",
+        "token": portal_token
     }
     response = requests.get(url, params=params)
     if response.status_code == 200:
