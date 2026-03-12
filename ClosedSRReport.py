@@ -290,8 +290,9 @@ def countTheClosed(outputPath):
     df = pd.read_excel(outputPath, sheet_name=0, engine='openpyxl')
 
     # Count occurrences in column I
-    valueCounts = df.iloc[:, 8].value_counts().reset_index()
+    valueCounts = df.iloc[:, 8].value_counts(dropna=False).reset_index()
     valueCounts.columns = ['Closed By', 'Count']
+    valueCounts['Closed By'] = valueCounts['Closed By'].fillna('UNASSIGNED')
 
     # Create table 
     lines = ['Closed SRs by Person:\n']
