@@ -440,7 +440,7 @@ def main():
     timerLabel = tk.Label(root, text="Time Remaining: 60:00")
     timerLabel.place(relx=1.0, rely=1.0, x=-10, y=-10, anchor="se")
 
-    def updateTimer(count=3600): #Shuts down after an hour because the token expires. I don't own the token or I would just have it refresh itself. dont look at me like that
+    def updateTimer(count=7200): #Shuts down after an hour because the token expires. I don't own the token or I would just have it refresh itself. dont look at me like that
         minutes, seconds = divmod(count, 60)
         timerLabel.config(text=f"Time Remaining: {minutes:02d}:{seconds:02d}")
         if count > 0:
