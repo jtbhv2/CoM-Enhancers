@@ -20,6 +20,19 @@ from openpyxl.worksheet.table import Table
 gmail.username = 'MemphisDailyWeather@gmail.com'
 gmail.password = os.getenv('googlekey')
 
+## Generate Token
+portal_url = "https://maps.memphistn.gov/portal/sharing/rest/generateToken"
+payload = {
+    'username': 'generate.token',
+    'password': 'Gettoken@2026',
+    'client': 'referer',
+    'referer': 'https://maps.memphistn.gov',
+    'f': 'json'
+}
+
+response = requests.post(portal_url, data=payload)
+portalToken = response.json()['token']
+
 def applyFormatting(df, ws, wb, outputPath):
     ws.title = 'All Drain Zones'
 
@@ -181,26 +194,14 @@ def incinerate(df):
 
 def fetchData(filter_condition):
     # Define the URL and params
-    ## Generate Token
-    portal_url = "https://maps.memphistn.gov/portal/sharing/rest/generateToken"
-    payload = {
-        'username': 'titus.frazier@memphistn.gov',
-        'password': 'Memphis2026!',
-        'client': 'referer',
-        'referer': 'https://maps.memphistn.gov',
-        'f': 'json'
-    }
- 
-    response = requests.post(portal_url, data=payload)
-    portal_token = response.json()['token']
- 
-###
+    global portalToken
     url = "https://maps.memphistn.gov/mapping/rest/services/PublicWorks/Drain_Services_PROD/FeatureServer/1/query"
     params = {
         "where": filter_condition,
-        "outFields": "*",
+        "outFields": "INCIDENT_NUMBER,REPORTED_DATE,ADDRESS1,REQUEST_TYPE,REQUEST_SUMMARY,Drain_Zone,MAP_PG,MAP_BLK,ASSIGNED_TO,SCF_URL",
+        "returnGeometry": "false",
         "f": "json",
-        "token": portal_token
+        "token": portalToken
     }
     response = requests.get(url, params=params)
     if response.status_code == 200:
@@ -232,8 +233,8 @@ def fetchData(filter_condition):
                 df.rename(columns=columnMapping, inplace=True)
 
                 # Keep only the needed columns
-                columnsToKeep = list(columnMapping.values())
-                df = df[columnsToKeep]
+                #columnsToKeep = list(columnMapping.values())
+                #df = df[columnsToKeep]
 
                 #Convert some dates
                 df['Reported Date'] = pd.to_datetime(df['Reported Date'], unit='ms', origin='unix')
@@ -302,12 +303,7 @@ def countTheClosed(outputPath):
         lines.append(f"{row['Closed By']:<20} {row['Count']:>10}")
     return "\n".join(lines)
 
-
-currentDate = datetime.now()
-checkDate = datetime(2026, 6, 1)
-#Forcing myself to look through this every now and then 
-
-if __name__ == "__main__" and checkDate > currentDate:
+if __name__ == "__main__":
     outputPath = queryData()
     countTheClosed(outputPath)
 
@@ -317,6 +313,7 @@ senderEmail = 'MemphisDailyWeather@gmail.com'
 recipientCC = 'brian.stlouis@memphistn.gov'
 recipientBCC = 'emailaddresshere'
 
+currentDate = datetime.now()
 #Attach the Excel report
 try:
     with open(outputPath, 'rb') as f:

@@ -19,6 +19,17 @@ from openpyxl import load_workbook
 from openpyxl.styles import Alignment, Font, PatternFill, GradientFill, Color
 from openpyxl.worksheet.table import Table
 
+## Generate Token
+portal_url = "https://maps.memphistn.gov/portal/sharing/rest/generateToken"
+payload = {
+    'username': 'generate.token',
+    'password': 'Gettoken@2026',
+    'client': 'referer',
+    'referer': 'https://maps.memphistn.gov',
+    'f': 'json'
+}
+response = requests.post(portal_url, data=payload)
+portalToken = response.json()['token']
 def showErrorMessage():
     ctypes.windll.user32.MessageBoxW(0,
     "Error: Unable to retrieve data. Either GIS is down, you are not connected to the internet, or something else broke. Please contact Brian.",
@@ -189,27 +200,16 @@ def incinerate(df):
     return df
 
 def runGISGrabber():
+    global portalToken
     # Define the URL and params
-    ## Generate Token
-    portal_url = "https://maps.memphistn.gov/portal/sharing/rest/generateToken"
-    payload = {
-        'username': 'titus.frazier@memphistn.gov',
-        'password': 'Memphis2026!',
-        'client': 'referer',
-        'referer': 'https://maps.memphistn.gov',
-        'f': 'json'
-    }
- 
-    response = requests.post(portal_url, data=payload)
-    portal_token = response.json()['token']
- 
-###
+
     url = "https://maps.memphistn.gov/mapping/rest/services/PublicWorks/Drain_Services_PROD/FeatureServer/1/query"
     params = {
         "where": "1=1",
-        "outFields": "*",
+        "outFields": "INCIDENT_NUMBER,REPORTED_DATE,ADDRESS1,REQUEST_TYPE,REQUEST_SUMMARY,Drain_Zone,MAP_PG,MAP_BLK,ASSIGNED_TO,SCF_URL",
+        "returnGeometry": "false",
         "f": "json",
-        "token": portal_token
+        "token": portalToken
     }
     # Fetch data from the GIS server
     response = requests.get(url, params=params)
@@ -239,8 +239,8 @@ def runGISGrabber():
             df.rename(columns=columnMapping, inplace=True)
 
             # Remove any columns that are not in the columnMapping
-            columnsToKeep = list(columnMapping.values())
-            df = df[columnsToKeep]
+            #columnsToKeep = list(columnMapping.values())
+            #df = df[columnsToKeep]
 
             #Convert some dates
             df['Reported Date'] = pd.to_datetime(df['Reported Date'], unit='ms', origin='unix')
@@ -300,27 +300,14 @@ def runGISGrabber():
         showErrorMessage()
 
 def fetchFloodData(filter_condition):
+    global portalToken
     # Define the URL and params
-    ## Generate Token
-    portal_url = "https://maps.memphistn.gov/portal/sharing/rest/generateToken"
-    payload = {
-        'username': 'titus.frazier@memphistn.gov',
-        'password': 'Memphis2026!',
-        'client': 'referer',
-        'referer': 'https://maps.memphistn.gov',
-        'f': 'json'
-    }
- 
-    response = requests.post(portal_url, data=payload)
-    portal_token = response.json()['token']
- 
-###
-    url = "https://maps.memphistn.gov/mapping/rest/services/PublicWorks/Drain_Services_PROD/FeatureServer/1/query"
+    url = "https://maps.memphistn.gov/mapping/rest/services/PublicWorks/Drain_Services_PROD/FeatureServer/0/query"
     params = {
         "where": filter_condition,
-        "outFields": "*",
+        "outFields": "INCIDENT_NUMBER,REPORTED_DATE,ADDRESS1,REQUEST_TYPE,REQUEST_SUMMARY,Drain_Zone,MAP_PG,MAP_BLK,ASSIGNED_TO,SCF_URL",
         "f": "json",
-        "token": portal_token
+        "token": portalToken
     }
     response = requests.get(url, params=params)
     if response.status_code == 200:
@@ -352,8 +339,8 @@ def fetchFloodData(filter_condition):
                 df.rename(columns=columnMapping, inplace=True)
 
                 # Keep only the needed columns
-                columnsToKeep = list(columnMapping.values())
-                df = df[columnsToKeep]
+                #columnsToKeep = list(columnMapping.values())
+                #df = df[columnsToKeep]
 
                 #Convert some dates
                 df['Reported Date'] = pd.to_datetime(df['Reported Date'], unit='ms', origin='unix')
@@ -450,19 +437,37 @@ def main():
     resultLabel = tk.Label(root, text="")
     resultLabel.pack(pady=10)
 
+    timerLabel = tk.Label(root, text="Time Remaining: 60:00")
+    timerLabel.place(relx=1.0, rely=1.0, x=-10, y=-10, anchor="se")
+
+    def updateTimer(count=3600): #Shuts down after an hour because the token expires. I don't own the token or I would just have it refresh itself. dont look at me like that
+        minutes, seconds = divmod(count, 60)
+        timerLabel.config(text=f"Time Remaining: {minutes:02d}:{seconds:02d}")
+        if count > 0:
+            root.after(1000, updateTimer, count - 1)
+        else:
+            def shutdownApp(root):
+                ctypes.windll.user32.MessageBoxW(
+                    0,
+                    "GIS Grabber has automatically timed out after one hour.",
+                    "Ticket Grabber Closed", 
+                    0x1000 | 0x40 #This changes the focus
+                )
+                root.destroy()
+            shutdownApp(root)
+    updateTimer()
+
     exportButton = tk.Button(root, text="Export Outstanding Flooding Tickets to Excel", command=lambda: exportFloodData(df3))
     exportButton.pack_forget()
 
-    versionLabel = tk.Label(root, text="Version 5.6.25")
+    versionLabel = tk.Label(root, text="Version 3.24.26")
     versionLabel.place(x=10, y=275)
 
     root.mainloop()
 
 currentDate = datetime.now()
-checkDate = datetime(2026, 6, 1)
-#Forcing myself to look through this every now and then 
 
-if __name__ == "__main__" and checkDate > currentDate:
+if __name__ == "__main__":
     main()
 else:
     showErrorMessage()
