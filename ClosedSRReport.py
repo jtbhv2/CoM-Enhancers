@@ -195,7 +195,7 @@ def incinerate(df):
 def fetchData(filter_condition):
     # Define the URL and params
     global portalToken
-    url = "https://maps.memphistn.gov/mapping/rest/services/PublicWorks/Drain_Services_PROD/FeatureServer/1/query"
+    url = "https://maps.memphistn.gov/mapping/rest/services/PublicWorks/Drain_Services_PROD/FeatureServer/0/query"
     params = {
         "where": filter_condition,
         "outFields": "INCIDENT_NUMBER,REPORTED_DATE,ADDRESS1,REQUEST_TYPE,REQUEST_SUMMARY,Drain_Zone,MAP_PG,MAP_BLK,ASSIGNED_TO,SCF_URL",
