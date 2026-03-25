@@ -306,6 +306,7 @@ def fetchFloodData(filter_condition):
     params = {
         "where": filter_condition,
         "outFields": "INCIDENT_NUMBER,REPORTED_DATE,ADDRESS1,REQUEST_TYPE,REQUEST_SUMMARY,Drain_Zone,MAP_PG,MAP_BLK,ASSIGNED_TO,SCF_URL",
+        "returnGeometry": "false",
         "f": "json",
         "token": portalToken
     }
