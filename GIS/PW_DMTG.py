@@ -449,7 +449,7 @@ def main():
             def shutdownApp(root):
                 ctypes.windll.user32.MessageBoxW(
                     0,
-                    "GIS Grabber has automatically timed out after one hour.",
+                    "GIS Grabber has automatically timed out after two hours.",
                     "Ticket Grabber Closed", 
                     0x1000 | 0x40 #This changes the focus
                 )
